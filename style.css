@@ -1,0 +1,126 @@
+:root {
+  --ink: #1c1c1c;
+  --muted: #6b6b6b;
+  --line: #e2e2e2;
+  --accent: #2e86ab;
+  --accent-ink: #ffffff;
+  --bg: #fafafa;
+  --card: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 0;
+}
+
+.field-row {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--card);
+}
+
+textarea { resize: vertical; }
+
+.grid-container {
+  margin-bottom: 24px;
+}
+
+.day-block {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.day-block h2 {
+  font-size: 1rem;
+  margin: 0 0 10px;
+}
+
+.class-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.class-option:last-child { border-bottom: none; }
+
+.class-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.class-option label {
+  margin: 0;
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#status-msg {
+  text-align: center;
+  font-size: 0.9rem;
+  min-height: 1.2em;
+}
+
+#status-msg.ok { color: #1a7f37; }
+#status-msg.err { color: #c73e1d; }
+
+.loading { color: var(--muted); font-size: 0.9rem; }

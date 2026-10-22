@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Koda CrossFit Norman - Coach Availability</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>Coach Availability</h1>
+      <p class="sub">Submit your availability for the upcoming week. You can resubmit any time before the schedule is generated &mdash; your latest submission is the one that counts.</p>
+    </header>
+
+    <form id="availability-form">
+      <div class="field-row">
+        <label for="coach-name">Name</label>
+        <input type="text" id="coach-name" name="name" required autocomplete="name" />
+      </div>
+
+      <div class="field-row">
+        <label for="week-of">Week of (Monday)</label>
+        <input type="date" id="week-of" name="weekOf" required />
+      </div>
+
+      <div id="grid-container" class="grid-container" aria-live="polite">
+        <p class="loading">Loading class grid&hellip;</p>
+      </div>
+
+      <div class="field-row">
+        <label for="notes">Anything else I should know?</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Out of town Thursday, can only do mornings this week, etc."></textarea>
+      </div>
+
+      <button type="submit" id="submit-btn">Submit availability</button>
+      <p id="status-msg" role="status"></p>
+    </form>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
