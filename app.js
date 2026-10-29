@@ -6,6 +6,11 @@ const form = document.getElementById("availability-form");
 const submitBtn = document.getElementById("submit-btn");
 const statusMsg = document.getElementById("status-msg");
 const weekOfInput = document.getElementById("week-of");
+const nameInput = document.getElementById("coach-name");
+const notesField = document.getElementById("notes");
+const copyLastBtn = document.getElementById("copy-last-btn");
+const noAvailabilityBtn = document.getElementById("no-availability-btn");
+const quickStatusMsg = document.getElementById("quick-status-msg");
 
 // Default the date field to the coming Monday, to nudge people toward the right week.
 function upcomingMonday() {
@@ -65,12 +70,89 @@ function renderGrid(data) {
   }
 }
 
+function setAllChecked(ids, checked) {
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = checked;
+  });
+}
+
+function showQuickStatus(text, cls) {
+  quickStatusMsg.textContent = text;
+  quickStatusMsg.className = cls || "";
+}
+
+copyLastBtn.addEventListener("click", async () => {
+  const name = nameInput.value.trim();
+  const weekOf = weekOfInput.value;
+
+  if (!name) {
+    showQuickStatus("Enter your name first.", "err");
+    return;
+  }
+  if (Object.keys(classesById).length === 0) {
+    showQuickStatus("Class grid is still loading - try again in a second.", "err");
+    return;
+  }
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.startsWith("PASTE_")) {
+    showQuickStatus("Form isn't wired up to the backend yet (missing Apps Script URL in config.js).", "err");
+    return;
+  }
+
+  copyLastBtn.disabled = true;
+  showQuickStatus("Looking up your last submission…", "");
+
+  try {
+    const url =
+      `${APPS_SCRIPT_URL}?action=getLastSubmission` +
+      `&name=${encodeURIComponent(name)}` +
+      `&beforeWeekOf=${encodeURIComponent(weekOf)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.status !== "ok") {
+      showQuickStatus(`Couldn't look that up (${data.error || "unknown error"}).`, "err");
+      return;
+    }
+    if (!data.found) {
+      showQuickStatus("No earlier submission found for that name - nothing to copy yet.", "err");
+      return;
+    }
+
+    setAllChecked(Object.keys(classesById), false);
+    setAllChecked(data.submission.availability || [], true);
+    notesField.value = data.submission.notes || "";
+
+    showQuickStatus(
+      `Copied your availability from the week of ${data.submission.weekOf}. Review it before submitting.`,
+      "ok"
+    );
+  } catch (err) {
+    showQuickStatus(`Couldn't look that up (${err.message}). Try again.`, "err");
+  } finally {
+    copyLastBtn.disabled = false;
+  }
+});
+
+noAvailabilityBtn.addEventListener("click", () => {
+  if (Object.keys(classesById).length === 0) {
+    showQuickStatus("Class grid is still loading - try again in a second.", "err");
+    return;
+  }
+
+  setAllChecked(Object.keys(classesById), false);
+  if (!notesField.value.trim()) {
+    notesField.value = "No availability this week.";
+  }
+  showQuickStatus("Cleared every class. Add any details in the notes box, then submit.", "ok");
+});
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("coach-name").value.trim();
+  const name = nameInput.value.trim();
   const weekOf = weekOfInput.value;
-  const notes = document.getElementById("notes").value.trim();
+  const notes = notesField.value.trim();
   const availability = Object.keys(classesById).filter(
     (id) => document.getElementById(id) && document.getElementById(id).checked
   );
@@ -112,6 +194,7 @@ form.addEventListener("submit", async (e) => {
     statusMsg.className = "ok";
     form.reset();
     weekOfInput.value = upcomingMonday();
+    showQuickStatus("", "");
   } catch (err) {
     statusMsg.textContent = `Something went wrong (${err.message}). Try again or text Toby.`;
     statusMsg.className = "err";

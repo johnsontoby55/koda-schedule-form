@@ -24,6 +24,12 @@
         <input type="date" id="week-of" name="weekOf" required />
       </div>
 
+      <div class="field-row quick-actions">
+        <button type="button" id="copy-last-btn" class="secondary-btn">Copy last week's availability</button>
+        <button type="button" id="no-availability-btn" class="secondary-btn">No availability this week</button>
+      </div>
+      <p id="quick-status-msg" role="status"></p>
+
       <div id="grid-container" class="grid-container" aria-live="polite">
         <p class="loading">Loading class grid&hellip;</p>
       </div>

@@ -120,7 +120,41 @@ button[type="submit"]:disabled {
   min-height: 1.2em;
 }
 
-#status-msg.ok { color: #1a7f37; }
-#status-msg.err { color: #c73e1d; }
+.ok { color: #1a7f37; }
+.err { color: #c73e1d; }
 
 .loading { color: var(--muted); font-size: 0.9rem; }
+
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.secondary-btn {
+  flex: 1;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background: #f1f1f1;
+}
+
+.secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#quick-status-msg {
+  text-align: center;
+  font-size: 0.85rem;
+  min-height: 1.1em;
+  margin: 0 0 20px;
+}
