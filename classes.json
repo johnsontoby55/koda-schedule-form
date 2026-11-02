@@ -1,5 +1,5 @@
 {
-  "_comment": "Real Koda CrossFit Norman weekly grid, from Toby's worksheet (2026-10-21). 'period' is opening/<6:30am, closing/>=6pm, regular otherwise (Toby's own definitions) - used only if the opening/closing rest rules ever get turned back on; both are off for now per the worksheet. See the build report for which cells were inferred rather than directly read off the table (the three 5:30pm rows, the five Sat/Sun single-day rows, Longevity, Beginners, and the second 6:30pm CrossFit).",
+  "_comment": "Real Koda CrossFit Norman weekly grid, from Toby's worksheet (2026-10-21), with corrections from Toby on 2026-11-02 (Saturday trimmed to just 9:30 CrossFit and 10:30 Hyrox; Friday 6:00 PM Beginners added; Saturday and Sunday single-day rows confirmed and no longer marked inferred). 'period' is opening/<6:30am, closing/>=6pm, regular otherwise (Toby's own definitions) - used only if the opening/closing rest rules ever get turned back on; both are off for now per the worksheet. See the build report for which cells were inferred rather than directly read off the table (the 5:30pm rows, Longevity, and the Monday/Thursday Beginners rows).",
   "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   "classTypes": {
     "CrossFit": "#E74C3C",
@@ -29,14 +29,13 @@
     { "id": "thu-0830", "day": "Thursday", "time": "08:30", "label": "8:30 AM", "type": "CrossFit", "period": "regular" },
     { "id": "fri-0830", "day": "Friday", "time": "08:30", "label": "8:30 AM", "type": "CrossFit", "period": "regular" },
 
-    { "id": "sat-0930", "day": "Saturday", "time": "09:30", "label": "9:30 AM", "type": "CrossFit", "period": "regular", "inferred": true },
+    { "id": "sat-0930", "day": "Saturday", "time": "09:30", "label": "9:30 AM", "type": "CrossFit", "period": "regular" },
 
     { "id": "mon-1000", "day": "Monday", "time": "10:00", "label": "10:00 AM", "type": "Longevity", "period": "regular", "inferred": true },
     { "id": "tue-1000", "day": "Tuesday", "time": "10:00", "label": "10:00 AM", "type": "Longevity", "period": "regular", "inferred": true },
     { "id": "fri-1000", "day": "Friday", "time": "10:00", "label": "10:00 AM", "type": "Longevity", "period": "regular", "inferred": true },
-    { "id": "sat-1000", "day": "Saturday", "time": "10:00", "label": "10:00 AM", "type": "Longevity", "period": "regular", "inferred": true },
 
-    { "id": "sat-1030", "day": "Saturday", "time": "10:30", "label": "10:30 AM", "type": "Hyrox", "period": "regular", "inferred": true },
+    { "id": "sat-1030", "day": "Saturday", "time": "10:30", "label": "10:30 AM", "type": "Hyrox", "period": "regular" },
 
     { "id": "mon-1200", "day": "Monday", "time": "12:00", "label": "Noon", "type": "CrossFit", "period": "regular" },
     { "id": "tue-1200", "day": "Tuesday", "time": "12:00", "label": "Noon", "type": "CrossFit", "period": "regular" },
@@ -44,9 +43,9 @@
     { "id": "thu-1200", "day": "Thursday", "time": "12:00", "label": "Noon", "type": "CrossFit", "period": "regular" },
     { "id": "fri-1200", "day": "Friday", "time": "12:00", "label": "Noon", "type": "CrossFit", "period": "regular" },
 
-    { "id": "sun-1200", "day": "Sunday", "time": "12:00", "label": "Noon", "type": "Oly", "period": "regular", "inferred": true },
-    { "id": "sun-1400", "day": "Sunday", "time": "14:00", "label": "2:00 PM", "type": "KodaFit", "period": "regular", "inferred": true },
-    { "id": "sun-1500", "day": "Sunday", "time": "15:00", "label": "3:00 PM", "type": "Kids", "period": "regular", "inferred": true },
+    { "id": "sun-1200", "day": "Sunday", "time": "12:00", "label": "Noon", "type": "Oly", "period": "regular" },
+    { "id": "sun-1400", "day": "Sunday", "time": "14:00", "label": "2:00 PM", "type": "KodaFit", "period": "regular" },
+    { "id": "sun-1500", "day": "Sunday", "time": "15:00", "label": "3:00 PM", "type": "Kids", "period": "regular" },
 
     { "id": "mon-1530", "day": "Monday", "time": "15:30", "label": "3:30 PM", "type": "CrossFit", "period": "regular" },
     { "id": "tue-1530", "day": "Tuesday", "time": "15:30", "label": "3:30 PM", "type": "CrossFit", "period": "regular" },
@@ -68,7 +67,7 @@
 
     { "id": "mon-1800", "day": "Monday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing", "inferred": true },
     { "id": "thu-1800", "day": "Thursday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing", "inferred": true },
-    { "id": "sat-1800", "day": "Saturday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing", "inferred": true },
+    { "id": "fri-1800", "day": "Friday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing" },
 
     { "id": "mon-1830", "day": "Monday", "time": "18:30", "label": "6:30 PM", "type": "CrossFit", "period": "closing" },
     { "id": "tue-1830", "day": "Tuesday", "time": "18:30", "label": "6:30 PM", "type": "CrossFit", "period": "closing" },
