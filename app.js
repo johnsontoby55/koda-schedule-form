@@ -1,5 +1,13 @@
-// Renders the weekly class grid from classes.json and posts the submission
-// to the Apps Script web app defined in config.js.
+// Renders the day x AM/PM "when are you UNAVAILABLE" grid from
+// classes.json and posts the submission to the Apps Script web app defined
+// in config.js.
+//
+// 2026-11 redesign: this used to be an opt-in grid (check every class you
+// can coach). Coaches were under-selecting classes they actually wanted,
+// so it's now opt-out - mark only the day/half-days you CANNOT coach;
+// everything else is assumed available. Backend (Code.js) and the
+// generator (buildAvailability.js) both expand "unavailable" against
+// classes.json to get the same per-class availability the scheduler needs.
 
 const gridContainer = document.getElementById("grid-container");
 const form = document.getElementById("availability-form");
@@ -12,6 +20,19 @@ const copyLastBtn = document.getElementById("copy-last-btn");
 const noAvailabilityBtn = document.getElementById("no-availability-btn");
 const quickStatusMsg = document.getElementById("quick-status-msg");
 
+// Day name -> the 3-letter prefix used in classes.json ids and in the
+// "unavailable" day/half-day codes this form submits (mon-am, mon-pm, ...).
+// Must match generator/src/buildAvailability.js's DAY_PREFIX exactly.
+const DAY_PREFIX = {
+  Monday: "mon",
+  Tuesday: "tue",
+  Wednesday: "wed",
+  Thursday: "thu",
+  Friday: "fri",
+  Saturday: "sat",
+  Sunday: "sun",
+};
+
 // Default the date field to the coming Monday, to nudge people toward the right week.
 function upcomingMonday() {
   const d = new Date();
@@ -22,23 +43,45 @@ function upcomingMonday() {
 }
 weekOfInput.value = upcomingMonday();
 
-let classesById = {};
+let allHalfKeys = []; // every "dayPrefix-half" key that's actually rendered (has >=1 class)
+const unavailableSet = new Set();
 
 fetch("classes.json")
   .then((r) => r.json())
   .then((data) => {
-    classesById = Object.fromEntries(data.classes.map((c) => [c.id, c]));
     renderGrid(data);
   })
   .catch((err) => {
     gridContainer.innerHTML = `<p class="loading">Couldn't load the class grid (${err.message}). Reload the page or tell Toby.</p>`;
   });
 
+function classHalf(cls) {
+  const hour = parseInt(String(cls.time).split(":")[0], 10);
+  return hour < 12 ? "am" : "pm";
+}
+
+function formatHalfTimes(classes) {
+  // e.g. "5:30, 6:30, 8:30, 10:00" for the muted detail line under a toggle.
+  return classes.map((c) => c.label.replace(/:00(?= ?[AP]M)/, "")).join(", ");
+}
+
 function renderGrid(data) {
   gridContainer.innerHTML = "";
+  allHalfKeys = [];
+
+  const intro = document.createElement("p");
+  intro.className = "grid-intro";
+  intro.textContent =
+    "Mark any day/half-day you CANNOT coach. Leave everything else alone — it's assumed you're available.";
+  gridContainer.appendChild(intro);
+
   for (const day of data.days) {
     const dayClasses = data.classes.filter((c) => c.day === day);
     if (dayClasses.length === 0) continue;
+
+    const dayPrefix = DAY_PREFIX[day];
+    const amClasses = dayClasses.filter((c) => classHalf(c) === "am");
+    const pmClasses = dayClasses.filter((c) => classHalf(c) === "pm");
 
     const block = document.createElement("div");
     block.className = "day-block";
@@ -47,34 +90,61 @@ function renderGrid(data) {
     heading.textContent = day;
     block.appendChild(heading);
 
-    for (const cls of dayClasses) {
-      const row = document.createElement("div");
-      row.className = "class-option";
+    const toggleRow = document.createElement("div");
+    toggleRow.className = "half-toggle-row";
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.id = cls.id;
-      checkbox.name = cls.id;
-      checkbox.value = cls.id;
-
-      const label = document.createElement("label");
-      label.setAttribute("for", cls.id);
-      label.textContent = cls.label;
-
-      row.appendChild(checkbox);
-      row.appendChild(label);
-      block.appendChild(row);
+    if (amClasses.length > 0) {
+      toggleRow.appendChild(makeHalfToggle(`${dayPrefix}-am`, "AM", amClasses));
+    }
+    if (pmClasses.length > 0) {
+      toggleRow.appendChild(makeHalfToggle(`${dayPrefix}-pm`, "PM", pmClasses));
     }
 
+    block.appendChild(toggleRow);
     gridContainer.appendChild(block);
   }
 }
 
-function setAllChecked(ids, checked) {
-  ids.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.checked = checked;
-  });
+function makeHalfToggle(key, halfLabel, classesInHalf) {
+  allHalfKeys.push(key);
+
+  const wrap = document.createElement("div");
+  wrap.className = "half-toggle-wrap";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "half-toggle";
+  btn.id = `half-${key}`;
+  btn.dataset.key = key;
+  btn.textContent = halfLabel;
+  btn.setAttribute("aria-pressed", "false");
+  btn.addEventListener("click", () => setHalfUnavailable(key, !unavailableSet.has(key)));
+
+  const detail = document.createElement("div");
+  detail.className = "half-detail";
+  detail.textContent = formatHalfTimes(classesInHalf);
+
+  wrap.appendChild(btn);
+  wrap.appendChild(detail);
+  return wrap;
+}
+
+function setHalfUnavailable(key, unavailable) {
+  const btn = document.getElementById(`half-${key}`);
+  if (!btn) return;
+  if (unavailable) {
+    unavailableSet.add(key);
+    btn.classList.add("unavailable");
+    btn.setAttribute("aria-pressed", "true");
+  } else {
+    unavailableSet.delete(key);
+    btn.classList.remove("unavailable");
+    btn.setAttribute("aria-pressed", "false");
+  }
+}
+
+function setAllUnavailable(keys, unavailable) {
+  keys.forEach((key) => setHalfUnavailable(key, unavailable));
 }
 
 function showQuickStatus(text, cls) {
@@ -90,7 +160,7 @@ copyLastBtn.addEventListener("click", async () => {
     showQuickStatus("Enter your name first.", "err");
     return;
   }
-  if (Object.keys(classesById).length === 0) {
+  if (allHalfKeys.length === 0) {
     showQuickStatus("Class grid is still loading - try again in a second.", "err");
     return;
   }
@@ -118,13 +188,20 @@ copyLastBtn.addEventListener("click", async () => {
       showQuickStatus("No earlier submission found for that name - nothing to copy yet.", "err");
       return;
     }
+    if (!Array.isArray(data.submission.unavailable)) {
+      showQuickStatus(
+        `Your submission from ${data.submission.weekOf} used the old form - please mark this week's unavailability manually.`,
+        "err"
+      );
+      return;
+    }
 
-    setAllChecked(Object.keys(classesById), false);
-    setAllChecked(data.submission.availability || [], true);
+    setAllUnavailable(allHalfKeys, false);
+    setAllUnavailable(data.submission.unavailable, true);
     notesField.value = data.submission.notes || "";
 
     showQuickStatus(
-      `Copied your availability from the week of ${data.submission.weekOf}. Review it before submitting.`,
+      `Copied your unavailability from the week of ${data.submission.weekOf}. Review it before submitting.`,
       "ok"
     );
   } catch (err) {
@@ -135,16 +212,16 @@ copyLastBtn.addEventListener("click", async () => {
 });
 
 noAvailabilityBtn.addEventListener("click", () => {
-  if (Object.keys(classesById).length === 0) {
+  if (allHalfKeys.length === 0) {
     showQuickStatus("Class grid is still loading - try again in a second.", "err");
     return;
   }
 
-  setAllChecked(Object.keys(classesById), false);
+  setAllUnavailable(allHalfKeys, true);
   if (!notesField.value.trim()) {
     notesField.value = "No availability this week.";
   }
-  showQuickStatus("Cleared every class. Add any details in the notes box, then submit.", "ok");
+  showQuickStatus("Marked every day/half-day unavailable. Add any details in the notes box, then submit.", "ok");
 });
 
 form.addEventListener("submit", async (e) => {
@@ -153,9 +230,7 @@ form.addEventListener("submit", async (e) => {
   const name = nameInput.value.trim();
   const weekOf = weekOfInput.value;
   const notes = notesField.value.trim();
-  const availability = Object.keys(classesById).filter(
-    (id) => document.getElementById(id) && document.getElementById(id).checked
-  );
+  const unavailable = Array.from(unavailableSet);
 
   if (!name || !weekOf) {
     statusMsg.textContent = "Please fill in your name and the week.";
@@ -167,7 +242,7 @@ form.addEventListener("submit", async (e) => {
     name,
     weekOf,
     notes,
-    availability,
+    unavailable,
     submittedAt: new Date().toISOString(),
   };
 
@@ -194,6 +269,7 @@ form.addEventListener("submit", async (e) => {
     statusMsg.className = "ok";
     form.reset();
     weekOfInput.value = upcomingMonday();
+    setAllUnavailable(allHalfKeys, false);
     showQuickStatus("", "");
   } catch (err) {
     statusMsg.textContent = `Something went wrong (${err.message}). Try again or text Toby.`;
