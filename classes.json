@@ -1,5 +1,5 @@
 {
-  "_comment": "Real Koda CrossFit Norman weekly grid, from Toby's worksheet (2026-10-21), with corrections from Toby on 2026-11-02 (Saturday trimmed to just 9:30 CrossFit and 10:30 Hyrox; Friday 6:00 PM Beginners added; Saturday and Sunday single-day rows confirmed and no longer marked inferred). 'period' is opening/<6:30am, closing/>=6pm, regular otherwise (Toby's own definitions) - used only if the opening/closing rest rules ever get turned back on; both are off for now per the worksheet. See the build report for which cells were inferred rather than directly read off the table (the 5:30pm rows, Longevity, and the Monday/Thursday Beginners rows).",
+  "_comment": "Real Koda CrossFit Norman weekly grid, from Toby's worksheet (2026-10-21), with corrections from Toby on 2026-11-02 (Saturday trimmed to just 9:30 CrossFit and 10:30 Hyrox; Friday 6:00 PM Beginners added; Saturday and Sunday single-day rows confirmed and no longer marked inferred) and 2026-11-07 (Wednesday 6:00 PM Beginners added, per a coach's note that it was missing - confirmed directly by Toby, not inferred). 'period' is opening/<6:30am, closing/>=6pm, regular otherwise (Toby's own definitions) - used only if the opening/closing rest rules ever get turned back on; both are off for now per the worksheet. See the build report for which cells were inferred rather than directly read off the table (the 5:30pm rows, Longevity, and the Monday/Thursday Beginners rows).",
   "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   "classTypes": {
     "CrossFit": "#E74C3C",
@@ -66,6 +66,7 @@
     { "id": "fri-1730", "day": "Friday", "time": "17:30", "label": "5:30 PM", "type": "KodaFit", "period": "regular", "inferred": true },
 
     { "id": "mon-1800", "day": "Monday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing", "inferred": true },
+    { "id": "wed-1800", "day": "Wednesday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing" },
     { "id": "thu-1800", "day": "Thursday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing", "inferred": true },
     { "id": "fri-1800", "day": "Friday", "time": "18:00", "label": "6:00 PM", "type": "Beginners", "period": "closing" },
 
